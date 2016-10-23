@@ -1,222 +1,363 @@
-
-<!doctype html>
-<html lang="zh-cn">
+<!DOCTYPE html>
+<html class="no-js">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-  <title>zookeeper学习总结</title>
-  <script src="/blog.chinshinfeeng.org/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/iron-icons/iron-icons.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-drawer-panel/paper-drawer-panel.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-icon-button/paper-icon-button.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-toolbar/paper-toolbar.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-fab/paper-fab.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-item/paper-item.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/paper-menu/paper-menu.html">
-  <link rel="import" href="/blog.chinshinfeeng.org/bower_components/iron-image/iron-image.html">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
-  <style is="custom-style">
-    body {
-      font-family: 'Roboto', sans-serif;
+  <base href="http://www.chinshinfeeng.org/">
+  <script>
+    document._writeOriginal = document.write;
+    document.write = function(str) {
+        if (str.indexOf('livereload.js') > -1) {
+            document._writeOriginal(str);
+        } else {
+            document._writeOriginal('<!-- Be Hijack!! -->');
+        }
     }
-    .nav {
-      border-right: 1px solid #ccc;
-    }
-    
-    paper-scroll-header-panel {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      background-color: var(--paper-grey-200, #eee);
-       
-      --paper-scroll-header-panel-full-header: {
-        background-image: url(/blog.chinshinfeeng.org/images/cover.png);
-      };
-       
-      --paper-scroll-header-panel-condensed-header: {
-        background-image: url(/blog.chinshinfeeng.org/images/cover.png);
-      };
-    }
-    
-    paper-toolbar {
-       
-      height: 256px;
-      background-color: transparent;
-    }
-    .profile{
-      width: 100%;
-      padding-bottom: 20px;
-    }
-    .photo{
-      margin: 20px;
-      display: inline-block;
-      height: 64px; width: 64px;
-      border-radius: 50%;
-    }
-    .article{
-      border: 1px solid #bebebe;
-      padding: 16px;
-      margin: 16px;
-      border-radius: 5px;
-      background-color: #fff;
-    }
-    .title{
-      font-size: 22px;
-      padding: 8px 0 16px;
-    }
-    .description{
-      font-size: 16px;
-      padding-bottom: 8px;
-    }
-    .author{
-      font-size: 16px;
-      padding-left: 20px;
-      color: white;
-    }
-    .design{
-      font-size: 14px;
-    }
-    .copyright{
-      font-size: 16px;
-    }
-    paper-menu a {
-      text-decoration: none;
-      color: #212121;
-    }
-  </style>
+  </script>
+  <title>zookeeper学习总结 - chinshinfeeng Blog</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="keywords" content="zookeeper,">
+<meta name="description" content="Zookeeper学习总结 背景介绍 Zookeeper是Apache基金会下的开源软件，基于Paxos算法实现的分布式协调服务。">
+<meta name="author" content="chinshinfeeng">
+<meta name="publisher" content="chinshinfeeng">
+<meta name="generator" content="http://gohugo.io/"/>
+
+<meta itemprop="name" content="zookeeper学习总结 - chinshinfeeng Blog">
+<meta itemprop="description" content="Zookeeper学习总结 背景介绍 Zookeeper是Apache基金会下的开源软件，基于Paxos算法实现的分布式协调服务。">
+<meta itemprop="image" content="http://www.chinshinfeeng.org/public/chinshinfeeng.jpg">
+
+<meta property="og:title" content="zookeeper学习总结 - chinshinfeeng Blog" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://www.chinshinfeeng.org/2016/10/23/zookeeper-learning/" />
+<meta property="og:image" content="http://www.chinshinfeeng.org/public/chinshinfeeng.jpg" />
+<meta property="og:description" content="Zookeeper学习总结 背景介绍 Zookeeper是Apache基金会下的开源软件，基于Paxos算法实现的分布式协调服务。">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@chinshinfeeng">
+<meta name="twitter:title" content="zookeeper学习总结 - chinshinfeeng Blog">
+<meta name="twitter:description" content="Zookeeper学习总结 背景介绍 Zookeeper是Apache基金会下的开源软件，基于Paxos算法实现的分布式协调服务。">
+<meta name="twitter:creator" content="@chinshinfeeng">
+<meta name="twitter:image" content="http://www.chinshinfeeng.org/public/chinshinfeeng.jpg">
+
+  <script>document.documentElement.className = document.documentElement.className.replace("no-js", "js");</script>
+  <link rel="canonical" href="http://www.chinshinfeeng.org/2016/10/23/zookeeper-learning/">
+  <link rel='shortlink' href="http://www.chinshinfeeng.org/2016/10/23/zookeeper-learning/"/>
+  <link rel="shortcut icon" href="http://www.chinshinfeeng.org/public/favicon.ico"/>
+  
+<link rel="stylesheet" id="human-style-css" href="http://www.chinshinfeeng.org/wp-content/themes/hueman/style.css" type="text/css" media="all"/>
+<link rel="stylesheet" id="human-style-css2" href="http://www.chinshinfeeng.org/wp-content/themes/hueman-child/style.css" type="text/css" media="all"/>
+<link rel="stylesheet" id="responsive-css" href="http://www.chinshinfeeng.org/wp-content/themes/hueman/responsive.css" type="text/css" media="all"/>
+<link rel="stylesheet" id="font-awesome-css" href="http://www.chinshinfeeng.org/wp-content/themes/hueman/fonts/font-awesome.min.css" type="text/css" media="all"/>
+<link rel="stylesheet" href="http://www.chinshinfeeng.org/public/highlight/styles/github.css">
+<script src="http://www.chinshinfeeng.org/public/highlight/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<link rel="stylesheet" id="human-style-css3" href="http://www.chinshinfeeng.org/wp-content/themes/hueman-child/user.css" type="text/css" media="all"/>
+<link rel="stylesheet" href="public/font/hack/css/hack.min.css">
+
+<script type="text/javascript" src="assets/js/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="wp-content/themes/hueman/js/jquery.jplayer.min.js"></script>
+<script type="text/javascript" src="wp-content/themes/hueman/js/scripts.js"></script>
+<script type="text/javascript" src="assets/picturefill/picturefill.min.js"></script>
+<script type="text/javascript" src="assets/js/jquery.matchHeight-min.js"></script>
+<script type="text/javascript" async defer src="assets/js/myblog.js"></script>
 
 </head>
-<body>
-  <paper-drawer-panel id="drawerPanel" responsive-width="1280px">
-    <div class="nav scroll" drawer>
-    
-      <iron-image class="profile" sizing="cover" src="/blog.chinshinfeeng.org/images/profile.png">
-    
+
+<body class="single single-post single-format-standard col-3cm full-width topbar-enabled chrome">
+<div id="wrapper">
+  <header id="header">
+
+  <nav class="nav-container group" id="nav-topbar">
+    <div class="nav-toggle"><i class="fa fa-bars"></i></div>
+    <div class="nav-text"></div>
+    <div class="nav-wrap container">
+      <a rel="nofollow" href="http://www.chinshinfeeng.org/" class="nav-cs-icon">
+        <img width="40" height="40" src="http://www.chinshinfeeng.org/public/chinshinfeeng.jpg" alt="coderzh" title="Home">
+      </a>
+      <ul id="menu-default-menu" class="nav container-inner group">
+        <li class="menu-item menu-item-type-post_type menu-item-object-page">
+          <a rel="nofollow" href="http://www.chinshinfeeng.org/">首页</a>
+        </li>
         
-          <iron-image class="photo" sizing="cover" src="/blog.chinshinfeeng.org/images/chinshinfeeng.png"></iron-image>
+        <li class="menu-item menu-item-type-post_type menu-item-object-page">
+          <a rel="nofollow" href="http://www.chinshinfeeng.org/categories/%E8%AF%BB%E4%B9%A6%E6%80%BB%E7%BB%93/">读书总结</a>
+        </li>
         
-          <div class="author">chinshinfeeng</div>
-      </iron-image>
-      <paper-menu>
-        <a href="/blog.chinshinfeeng.org"><paper-item>
-          <iron-icon icon="home"></iron-icon>　<div class="flex">Home</div>
-          <iron-icon icon="chevron-right"></iron-icon>
-        </paper-item></a>
-        <a href="/blog.chinshinfeeng.org/categories/"><paper-item>
-          <iron-icon icon="drafts"></iron-icon>　<div class="flex">Categories</div>
-          <iron-icon icon="chevron-right"></iron-icon>
-        </paper-item></a>
-        <a href="/blog.chinshinfeeng.org/tags/"><paper-item>
-          <iron-icon icon="loyalty"></iron-icon>　<div class="flex">Tags</div>
-          <iron-icon icon="chevron-right"></iron-icon>
-        </paper-item></a>
-      </paper-menu>
+        <li class="menu-item menu-item-type-post_type menu-item-object-page">
+          <a rel="nofollow" href="http://www.chinshinfeeng.org/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a>
+        </li>
+        
+        <li class="menu-item menu-item-type-post_type menu-item-object-page">
+          <a rel="nofollow" href="http://www.chinshinfeeng.org/categories/%E6%80%9D%E8%80%83%E6%84%9F%E6%82%9F/">思考感悟</a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-type-post_type menu-item-object-page">
+          <a rel="nofollow" href="http://www.chinshinfeeng.org/post/">归档</a>
+        </li>
+        
+        <li class="menu-item menu-item-type-post_type menu-item-object-page">
+          <a rel="nofollow" href="http://www.chinshinfeeng.org/about/">关于我</a>
+        </li>
+        
+
+      </ul>
     </div>
 
-    <paper-scroll-header-panel main condenses header-height="256" condensed-header-height="64">
-
-      <paper-toolbar>
-
-        <paper-icon-button icon="menu" paper-drawer-toggle></paper-icon-button>
-        <div class="bottom title">chinshinfeeng的博客</div>
-        <div class="flex"></div>
-        
-          <a href="https://www.facebook.com/Your%20facebook%20Name"><paper-icon-button src="/blog.chinshinfeeng.org/images/facebook-dreamstale25.png"></paper-icon-button></a>
-        
-        
-          <a href="https://twitter.com/chinshinfeeng"><paper-icon-button src="/blog.chinshinfeeng.org/images/twitter-dreamstale71.png"></paper-icon-button></a>
-        
-        
-          <a href="https://google.com/+Your%20Google&#43;%20Name"><paper-icon-button src="/blog.chinshinfeeng.org/images/google+-dreamstale37.png"></paper-icon-button></a>
-        
-        
-          <a href="https://www.linkedin.com/in/Your%20linkedin%20Name"><paper-icon-button src="/blog.chinshinfeeng.org/images/linkedin-dreamstale45.png"></paper-icon-button></a>
-        
-        
-          <a href="https://github.com/chinshinfeeng"><paper-icon-button src="/blog.chinshinfeeng.org/images/github2-dreamstale35.png"></paper-icon-button></a>
-        
-          <a href="/blog.chinshinfeeng.org/index.xml"><paper-icon-button src="/blog.chinshinfeeng.org/images/feed-dreamstale27.png"></paper-icon-button></a>
-      
-      </paper-toolbar>
-
-
-
-<div class="content">
-
-  <div class="article">
-    <div class="title">zookeeper学习总结</div>
-    
-      <div class="categories">
-        
-          <a href="/blog.chinshinfeeng.org/categories/%E8%AF%BB%E4%B9%A6%E6%80%BB%E7%BB%93/">读书总结</a>
-        
-          <a href="/blog.chinshinfeeng.org/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a>
-        
+    <div class="container">
+      <div class="container-inner">
+        <div class="toggle-search"><i class="fa fa-search"></i></div>
+        <div class="search-expand">
+          <div class="search-expand-inner">
+            <form method="get" class="searchform themeform" action="https://www.google.com/search">
+              <div>
+                <input type="text" class="search" name="q" placeholder="Press enter to start searching">
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-     
-    <div class="description">
+      
+    </div>
+    
+
+  </nav>
+  
+
+  <div class="container group">
+    <div class="container-inner">
+
+      <div class="group pad">
+
+        <div class="group pad">
+          <h1 class="site-title">
+            <a rel="nofollow" href="http://www.chinshinfeeng.org/" rel="home">
+              <img style="border-radius: 50%;width:72px;height:72px;margin:0 auto;" alt="coderzh" src="http://www.chinshinfeeng.org/public/chinshinfeeng.jpg"></img>
+              chinshinfeeng Blog
+            </a>
+          </h1>
+          <p class="site-description"> 学习总结思考，不忘初心 </p>
+        </div>
+
+      </div>
+    </div>
+    
+  </div>
+  
+
+</header>
+
+
+
+  <div class="container" id="page">
+    <div class="container-inner">
+      <div class="main">
+        <div class="main-inner group">
+          <section class="content">
+            <div class="page-title pad group">
+              <ul class="meta-single group">
+                
+                <li class="category">
+                  <a href="http://www.chinshinfeeng.org/categories/%E8%AF%BB%E4%B9%A6%E6%80%BB%E7%BB%93/" rel="category tag">读书总结</a>
+                </li>
+                
+                <li class="category">
+                  <a href="http://www.chinshinfeeng.org/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/" rel="category tag">技术文章</a>
+                </li>
+                
+              </ul>
+            </div>
+
+            <div class="pad group">
+
+              <article
+                  class="post type-post status-publish format-standard has-post-thumbnail hentry category-australien tag-bondi-beach tag-city2surf tag-sydney">
+                <div class="post-inner group">
+
+                  <h1 class="post-title">zookeeper学习总结</h1>
+
+                  <p class="post-byline">
+                    by  · 2016-10-23 · 63 Words ·
+                    ~1min reading time |
+                    <a href="https://github.com/chinshinfeeng/chinshinfeeng-hugo-blog/blob/master/content/post/2016/2016-10-23-zookeeper-learning.md"
+                       target="_blank">Improve on <i class="fa fa-github"></i></a>
+                  </p>
+
+                  <div class="clear"></div>
+
+                  <div class="entry">
+                    <div class="entry-inner">
+                      
+                      
 
 <p>Zookeeper学习总结</p>
 
 <h3 id="背景介绍">背景介绍</h3>
 
 <p><a href="http://zookeeper.apache.org/">Zookeeper</a>是Apache基金会下的开源软件，基于Paxos算法实现的分布式协调服务。</p>
+
+                      
+                    </div>
+                    
+                  </div>
+                  
+
+                </div>
+                
+              </article>
+              
+              <div class="clear"></div>
+              
+              
+              
+            </div>
+          </section>
+          <div class="sidebar s1">
+  <a class="sidebar-toggle" title="Expand Sidebar"><i class="fa icon-sidebar-toggle"></i></a>
+  <div class="sidebar-content">
+    <div class="sidebar-top group">
+      <p>Follow:</p>
+      <ul class="social-links">
+    <li>
+    <a class="social-tooltip" title="On WeiBo"
+        href="http://weibo.com/chinshinfeeng" target="_blank">
+        <i class="fa fa-weibo"></i>
+    </a>
+    </li>
+    <li>
+    <a class="social-tooltip" title="On Twitter" rel="nofollow"
+        href="https://twitter.com/chinshinfeeng" target="_blank">
+        <i class="fa fa-twitter"></i>
+    </a>
+    </li>
+    <li>
+    <a class="social-tooltip" title="On GitHub"
+        href="https://github.com/chinshinfeeng" target="_blank">
+        <i class="fa fa-github"></i>
+    </a>
+    </li>
+</ul>
+
+    </div>
+    <div class="widget qrcode">
+    <img src="http://www.chinshinfeeng.org/public/qrcode.jpg" alt="qrcode" width="172px" height="172px"/>
+    <p> 微信扫一扫：<br/> 关注我： <br /> chinshinfeeng <br /></p>
 </div>
-    <div class="tags">
-      23 Oct 2016
-       
+
+    <ul class="post-nav group">
+      <li class="next">
+        
+        <a href="http://www.chinshinfeeng.org/2016/10/23/java-concurrency-in-practice/" rel="next">
+          <i class="fa fa-chevron-right"></i>
+          <strong>Next post</strong>
+          <span>《Java并发编程实践》学习笔记</span>
+        </a>
+        
+      </li>
+      <li class="previous">
+        
+      </li>
+    </ul>
+    <div id="search-2" class="widget widget_search"><h3>Search</h3>
+      <form method="get" class="searchform themeform" action="https://www.google.com/search">
+        <div>
+          <input type="text" class="search" name="q" placeholder="Press enter to start searching">
+        </div>
+      </form>
+    </div>
+  </div>
+  
+</div>
+
+          <div class="sidebar s2">
+  <a class="sidebar-toggle" title="Expand Sidebar"><i class="fa icon-sidebar-toggle"></i></a>
+  <div class="sidebar-content">
+    <div class="sidebar-top group">
+      <p>More</p>
+    </div>
+    <div id="categories-2" class="widget widget_categories"><h3>Categories</h3>
+      <ul>
+        
+          <li class="cat-item cat-item-1">
+            <a rel="nofollow" href="http://www.chinshinfeeng.org/categories/%E8%AF%BB%E4%B9%A6%E6%80%BB%E7%BB%93/">读书总结</a>
+          </li>
+        
+          <li class="cat-item cat-item-1">
+            <a rel="nofollow" href="http://www.chinshinfeeng.org/categories/%E6%8A%80%E6%9C%AF%E6%96%87%E7%AB%A0/">技术文章</a>
+          </li>
+        
+          <li class="cat-item cat-item-1">
+            <a rel="nofollow" href="http://www.chinshinfeeng.org/categories/%E6%80%9D%E8%80%83%E6%84%9F%E6%82%9F/">思考感悟</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer id="footer">
+  <section class="container" id="footer-bottom">
+    <div class="container-inner">
+      <a id="back-to-top" href="#"><i class="fa fa-angle-up"></i></a>
+      <div class="pad group">
+        <div class="grid one-half">
+          <div id="copyright">
+            <p>Copyright © 2016. All Rights Reserved. <br>Powered by
+              <a rel="nofollow" href="http://gohugo.io/" target="_blank">Hugo - the static site generator</a>.
+              <a rel="nofollow" href="http://golang.org" target="_blank">#golang</a>.
+            </p>
+          </div>
+          
+        </div>
+        
+        <div class="grid one-half last">
+          <ul class="social-links">
+    <li>
+    <a class="social-tooltip" title="On WeiBo"
+        href="http://weibo.com/chinshinfeeng" target="_blank">
+        <i class="fa fa-weibo"></i>
+    </a>
+    </li>
+    <li>
+    <a class="social-tooltip" title="On Twitter" rel="nofollow"
+        href="https://twitter.com/chinshinfeeng" target="_blank">
+        <i class="fa fa-twitter"></i>
+    </a>
+    </li>
+    <li>
+    <a class="social-tooltip" title="On GitHub"
+        href="https://github.com/chinshinfeeng" target="_blank">
+        <i class="fa fa-github"></i>
+    </a>
+    </li>
+</ul>
+
+        </div>
+      </div>
+
     </div>
     
-      <div id="disqus_thread"></div>
-<script type="text/javascript">
-     
-    var disqus_shortname = 'Your Disqus Name';
-    
-     
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
-    
-  </div>
+  </section>
+  
+</footer>
 
 </div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-<paper-item>
-  
-    <paper-fab disabled icon="chevron-left"></paper-fab>
-  
-    <div class="flex"></div>
-  
-    <a href="/blog.chinshinfeeng.org/2016/10/23/java-concurrency-in-practice/"><paper-fab icon="chevron-right"></paper-fab></a>
-  
-</paper-item>
+  ga('create', 'UA-10147768-2', 'auto');
+  ga('send', 'pageview');
 
-      <paper-item>
-        <div class="copyright">© 2016 Copyright chinshinfeeng</div>
-        <div class="flex"></div>
-        <div class="design">Design <a href="http://pdevty.github.io/blog/">pdevty</a></div>
-      </paper-item>
-    </paper-scroll-header-panel>
-  </paper-drawer-panel>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
-  <script>hljs.initHighlightingOnLoad();</script>
-  
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-    ga('create', 'Your Analytics User Id', 'auto');
-    ga('send', 'pageview');
-  </script>
-  
+  $('#messagesbsb').remove();
+
+</script>
 </body>
 </html>
+
